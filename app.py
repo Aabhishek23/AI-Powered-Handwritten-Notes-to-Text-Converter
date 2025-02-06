@@ -3,11 +3,11 @@ from flask import Flask, render_template, request, jsonify
 import PIL.Image
 import io
 
-# Initialize the Flask app
+# Initialize Flask app
 app = Flask(__name__)
 
 # Configure the AI model
-api_key = "AIzaSyBxg2Vzurrs7giquvhPlghaxZO0ya2MdK8"  # Replace with actual key
+api_key = "AIzsaSyBxg2Vzuddrrs7gisssssbhbhXjquvhPlghaxZO0ya2MdK8"  # Replace with your actual key
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel(model_name="gemini-2.0-flash")
 
@@ -15,14 +15,15 @@ model = genai.GenerativeModel(model_name="gemini-2.0-flash")
 sample_file_2 = PIL.Image.open('circuit.png')
 sample_file_3 = PIL.Image.open('firefighter.jpg')
 
-# Function to encode images in binary format
-def encode_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return image_file.read()
+# Convert image to bytes
+def encode_image(image_obj):
+    img_byte_array = io.BytesIO()
+    image_obj.save(img_byte_array, format='PNG')  # Convert to PNG format
+    return img_byte_array.getvalue()  # Return binary data
 
 @app.route("/")
 def home():
-    return render_template("index.html")  # Serve a basic HTML form for interaction
+    return render_template("index.html")  # Serve a simple HTML form
 
 @app.route("/ask", methods=["POST"])
 def ask_image():
@@ -42,7 +43,7 @@ def ask_image():
 
     # Generate the AI response
     response = model.generate_content([
-        {"mime_type": "image/jpeg", "data": selected_image_binary},
+        {"mime_type": "image/png", "data": selected_image_binary},
         query
     ])
 
