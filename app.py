@@ -61,11 +61,13 @@
 
 from dotenv import load_dotenv
 import google.generativeai as genai
+import json
 from flask import Flask, render_template, request, jsonify
 import PIL.Image
 import io
 import base64
 import os
+
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -84,6 +86,7 @@ model = genai.GenerativeModel(model_name="gemini-2.0-flash")
 def encode_image(image_path):
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode("utf-8")  # Convert to Base64 string
+
 
 @app.route("/")
 def home():
