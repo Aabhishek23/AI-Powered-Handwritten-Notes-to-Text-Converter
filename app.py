@@ -1,41 +1,53 @@
-from flask import Flask, render_template
 import google.generativeai as genai
-import httpx
-import base64
+from flask import Flask, render_template, request, jsonify
+import PIL.Image
+import io
 
+# Initialize the Flask app
 app = Flask(__name__)
 
-# Configure API key for Google Generative AI
-genai.configure(api_key="AIzaSyBxg2Vzurrs7giquvhPlghaxZO0ya2MdK8")
+# Configure the AI model
+api_key = "AIzsaSyBxg2Vzuddrrs7gisssssbhbhXjquvhPlghaxZO0ya2MdK8"  # Replace with actual key
+genai.configure(api_key=api_key)
+model = genai.GenerativeModel(model_name="gemini-2.0-flash")
+
+# Load sample images
+sample_file_2 = PIL.Image.open('circuit.png')
+sample_file_3 = PIL.Image.open('firefighter.jpg')
+
+# Function to encode images in binary format
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return image_file.read()
 
 @app.route("/")
 def home():
-    # Retrieve an image from a URL
-    image_path = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall.jpg/2560px-Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall.jpg"
-    image = httpx.get(image_path)
+    return render_template("index.html")  # Serve a basic HTML form for interaction
 
-    # Choose the Gemini model
-    model = genai.GenerativeModel(model_name="gemini-2.0-flash")
+@app.route("/ask", methods=["POST"])
+def ask_image():
+    image_choice = request.form.get("image_choice")
+    query = request.form.get("query")
 
-    # Create a prompt
-    prompt = "Caption this image."
-    
-    # Generate the content (caption for the image)
-    response = model.generate_content(
-        [
-            {
-                "mime_type": "image/jpeg",
-                "data": base64.b64encode(image.content).decode("utf-8"),
-            },
-            prompt,
-        ]
-    )
+    # Select the correct image based on user choice
+    if image_choice == "circuit":
+        selected_image = sample_file_2
+    elif image_choice == "firefighter":
+        selected_image = sample_file_3
+    else:
+        return jsonify({"error": "Invalid image choice! Please choose 'circuit' or 'firefighter'."})
 
-    # Get the caption text from the response
-    caption = response.text
+    # Convert the image to binary format
+    selected_image_binary = encode_image(selected_image)
 
-    # Return the caption on the webpage
-    return render_template("index.html", caption=caption)
+    # Generate the AI response
+    response = model.generate_content([
+        {"mime_type": "image/jpeg", "data": selected_image_binary},
+        query
+    ])
+
+    # Return the AI response as JSON
+    return jsonify({"ai_response": response.text})
 
 if __name__ == "__main__":
     app.run(debug=True)
