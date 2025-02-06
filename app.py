@@ -71,7 +71,7 @@ import os
 app = Flask(__name__)
 
 # Configure the AI model
-api_key = os.getenv("AIzaSyBxg2Vzurrs7giquvhPlghaxZO0ya2MdK8")  # Use environment variables for security
+api_key = os.getenv("GEMINI_API_KEY")  # Use environment variables for security
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel(model_name="gemini-2.0")
 
