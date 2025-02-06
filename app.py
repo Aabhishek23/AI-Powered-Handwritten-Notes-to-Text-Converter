@@ -7,7 +7,7 @@ import io
 app = Flask(__name__)
 
 # Configure the AI model
-api_key = "AIzsaSyBxg2Vzuddrrs7gisssssbhbhXjquvhPlghaxZO0ya2MdK8"  # Replace with your actual key
+api_key = "AIzaSyBxg2Vzurrs7giquvhPlghaxZO0ya2MdK8"  # Replace with your actual key
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel(model_name="gemini-2.0-flash")
 
