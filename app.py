@@ -59,7 +59,7 @@
 
 ############################################################################################################
 
-
+from dotenv import load_dotenv
 import google.generativeai as genai
 from flask import Flask, render_template, request, jsonify
 import PIL.Image
@@ -70,10 +70,15 @@ import os
 # Initialize Flask app
 app = Flask(__name__)
 
-# Configure the AI model
-api_key = os.getenv("GEMINI_API_KEY")  # Use environment variables for security
+# Load API key from .env
+load_dotenv()
+api_key = os.getenv("GOOGLE_API_KEY")
+
+# Configure Gemini AI
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel(model_name="gemini-2.0")
+
+
+model = genai.GenerativeModel(model_name="gemini-2.0-flash")
 
 # Function to encode image as Base64
 def encode_image(image_path):
